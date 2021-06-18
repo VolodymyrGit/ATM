@@ -1,4 +1,4 @@
-package volm.atm.security;
+package volm.atm.security.dto;
 
 
 import lombok.AllArgsConstructor;

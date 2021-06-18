@@ -8,12 +8,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import volm.atm.exceptions.InvalidTokenException;
+import volm.atm.security.dto.UserSecurityDto;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.TemporalAmount;
 import java.util.Date;
 
 
