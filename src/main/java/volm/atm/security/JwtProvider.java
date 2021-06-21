@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import volm.atm.exceptions.InvalidTokenException;
 import volm.atm.security.dto.SecurityUserRequestDto;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
 
@@ -29,7 +27,6 @@ public class JwtProvider {
     public String generateToken(SecurityUserRequestDto securityUserRequestDto) {
 
         Date date = new DateTime().plusHours(1).toDate();
-//                Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         String subject = gson.toJson(securityUserRequestDto);
 
         return Jwts.builder()
