@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import volm.atm.models.User;
 import volm.atm.repos.UserRepo;
-import volm.atm.security.dto.RegistrationRequestDto;
+import volm.atm.security.Role;
+import volm.atm.security.dto.SecurityUserRequestDto;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 
 
 @RestController
@@ -27,14 +29,14 @@ public class RegistrationController {
     private final UserRepo userRepo;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registration(@RequestBody RegistrationRequestDto requestDto) {
+    public ResponseEntity<HttpStatus> registration(@RequestBody SecurityUserRequestDto requestDto) {
 
         String securePass = passwordEncoder.encode(requestDto.getPinCode());
 
         User newUser = User.builder()
-                .userName(requestDto.getUserName())
                 .cardNumber(requestDto.getCardNumber())
                 .pinCode(securePass)
+                .roles(Collections.singletonList(Role.BANK_USER))
                 .balance(BigDecimal.valueOf(0))
                 .build();
 

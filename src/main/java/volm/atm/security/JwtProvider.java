@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import volm.atm.exceptions.InvalidTokenException;
-import volm.atm.security.dto.UserSecurityDto;
+import volm.atm.security.dto.SecurityUserRequestDto;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -25,10 +25,10 @@ public class JwtProvider {
     private  final Gson gson;
 
 
-    public String generateToken(UserSecurityDto userSecurityDto) {
+    public String generateToken(SecurityUserRequestDto securityUserRequestDto) {
 
         Date date = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        String subject = gson.toJson(userSecurityDto);
+        String subject = gson.toJson(securityUserRequestDto);
 
         return Jwts.builder()
                 .setSubject(subject)
@@ -49,9 +49,9 @@ public class JwtProvider {
     }
 
 
-    public UserSecurityDto getLoginPasswordFromToken(String token) {
+    public SecurityUserRequestDto getLoginPasswordFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         String subject = claims.getSubject();
-        return gson.fromJson(subject, UserSecurityDto.class);
+        return gson.fromJson(subject, SecurityUserRequestDto.class);
     }
 }

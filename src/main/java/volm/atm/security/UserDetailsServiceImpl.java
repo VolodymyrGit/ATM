@@ -16,7 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String cardNumber) throws UsernameNotFoundException {
-        return userRepo.findByCardNumberEquals(Long.parseLong(cardNumber))
+        return userRepo.findByCardNumberEquals(cardNumber)
                 .orElseThrow(() -> new UsernameNotFoundException("Cannot find user by this " + cardNumber));
     }
 }

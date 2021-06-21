@@ -41,9 +41,6 @@ public class User implements UserDetails {
     @GeneratedValue
     private Long id;
 
-    @Column(name = "u_name")
-    private String userName;
-
     @Column(name = "card_number", unique = true)
     private String cardNumber;
 
@@ -58,8 +55,7 @@ public class User implements UserDetails {
     private BigDecimal balance;
 
 
-    public User(String userName, String cardNumber, String pinCode, List<Role> roles, BigDecimal balance) {
-        this.userName = userName;
+    public User(String cardNumber, String pinCode, List<Role> roles, BigDecimal balance) {
         this.cardNumber = cardNumber;
         this.pinCode = pinCode;
         this.roles = roles;
@@ -78,7 +74,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return cardNumber;
     }
 
     @Override
