@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import volm.atm.controllers.dto.BalanceResponseDto;
 import volm.atm.controllers.dto.TransactionsRequestDto;
 import volm.atm.exceptions.EntityNotFoundException;
-import volm.atm.models.OperationType;
 import volm.atm.models.User;
 import volm.atm.models.UserTransactions;
 import volm.atm.repos.UserRepo;
@@ -23,7 +22,6 @@ import java.util.List;
 
 
 @RestController
-//@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TransactionsController {
 
