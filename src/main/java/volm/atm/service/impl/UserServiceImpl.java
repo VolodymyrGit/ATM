@@ -9,6 +9,7 @@ import volm.atm.models.User;
 import volm.atm.repos.UserRepo;
 import volm.atm.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -29,5 +30,12 @@ public class UserServiceImpl implements UserService {
             return Optional.of(userFromDB);
         }
         return Optional.empty();
+    }
+
+
+    @Override
+    public boolean checkIfEnoughMoney(User user, BigDecimal amountToSubtract) {
+
+        return user.getBalance().subtract(amountToSubtract).compareTo(BigDecimal.valueOf(0)) >= 0;
     }
 }

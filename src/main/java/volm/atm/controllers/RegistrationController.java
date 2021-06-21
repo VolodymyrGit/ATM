@@ -21,7 +21,7 @@ import java.util.Collections;
 
 @RestController
 @RequestMapping("/registration")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class RegistrationController {
 

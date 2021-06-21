@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -27,6 +29,9 @@ public class UserTransactions {
     @GeneratedValue
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private OperationType operationType;
+
     @ManyToOne
     private User userFrom;
 
@@ -37,7 +42,12 @@ public class UserTransactions {
 
     private BigDecimal amount;
 
-    public UserTransactions(User userFrom, User userTo, LocalDateTime transactionTime, BigDecimal amount) {
+    public UserTransactions(OperationType operationType,
+                            User userFrom,
+                            User userTo,
+                            LocalDateTime transactionTime,
+                            BigDecimal amount) {
+        this.operationType = operationType;
         this.userFrom = userFrom;
         this.userTo = userTo;
         this.transactionTime = transactionTime;
