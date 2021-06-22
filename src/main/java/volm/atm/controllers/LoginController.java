@@ -1,46 +1,42 @@
 package volm.atm.controllers;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import volm.atm.models.User;
-import volm.atm.repos.UserRepo;
-import volm.atm.security.Role;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import volm.atm.models.User;
+import volm.atm.security.JwtProvider;
+import volm.atm.security.dto.SecurityUserRequestDto;
+import volm.atm.service.UserService;
+
 import java.util.Optional;
 
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final UserRepo userRepo;
+    private final UserService userService;
+    private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
 
-    @GetMapping("/login")
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody SecurityUserRequestDto requestDto) {
 
-    public String getLoginView() {
+        Optional<User> userFromDB = userService.findByLoginAndPassword(
+                requestDto.getCardNumber(),
+                requestDto.getPinCode());
 
-        userRepo.save(new User("Bob", 1234456778900987L, "sdfsdskdfshf2387r5hb2rb",
-                new ArrayList<>(Collections.singletonList(Role.BANK_USER)), 12546L));
+        if (userFromDB.isPresent() && passwordEncoder.matches(requestDto.getPinCode(), userFromDB.get().getPinCode())) {
 
-        return "login";
+            String token = jwtProvider.generateToken(requestDto);
+            return ResponseEntity.ok(token);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
-
-//    @PutMapping("/login")
-//    public String postLogin(@RequestParam(name = "cardNumber") Long login, String password, Model model) {
-//
-//        Optional<User> userFromDB = userRepo.findByCardNumberEquals(login);
-//
-//        String securePin
-//        return "login";
-//    }
 }

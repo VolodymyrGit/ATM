@@ -1,6 +1,7 @@
 package volm.atm.models;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,29 +22,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
-
+@Entity
+@Table(name = "usr")
 @Getter
 @Setter
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "usr")
+@Builder
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(name = "u_name")
-    private String userName;
-
     @Column(name = "card_number", unique = true)
-    private Long cardNumber;
+    private String cardNumber;
 
     @Column(name = "pin_code")
     private String pinCode;
@@ -53,11 +52,10 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     private List<Role> roles;
 
-    private Long balance;
+    private BigDecimal balance;
 
 
-    public User(String userName, Long cardNumber, String pinCode, List<Role> roles, Long balance) {
-        this.userName = userName;
+    public User(String cardNumber, String pinCode, List<Role> roles, BigDecimal balance) {
         this.cardNumber = cardNumber;
         this.pinCode = pinCode;
         this.roles = roles;
@@ -76,7 +74,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return cardNumber;
     }
 
     @Override
