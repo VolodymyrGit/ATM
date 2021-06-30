@@ -14,8 +14,10 @@ import volm.atm.repos.UserRepo;
 import volm.atm.security.Role;
 import volm.atm.security.dto.SecurityUserRequestDto;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Optional;
 
 
 @RestController
@@ -27,7 +29,7 @@ public class RegistrationController {
     private final UserRepo userRepo;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registration(@RequestBody SecurityUserRequestDto requestDto) {
+    public ResponseEntity<HttpStatus> registration(@RequestBody @Valid SecurityUserRequestDto requestDto) {
 
         String securePass = passwordEncoder.encode(requestDto.getPinCode());
 
@@ -38,6 +40,11 @@ public class RegistrationController {
                 .balance(BigDecimal.valueOf(0))
                 .build();
 
+        Optional<User> userByCardNumber = userRepo.findByCardNumberEquals(requestDto.getCardNumber());
+
+        if (userByCardNumber.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         userRepo.save(newUser);
 
         return ResponseEntity.ok().build();

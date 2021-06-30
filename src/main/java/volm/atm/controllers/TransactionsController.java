@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import volm.atm.controllers.dto.BalanceResponseDto;
+import volm.atm.controllers.dto.TransactionDto;
 import volm.atm.controllers.dto.TransactionsRequestDto;
 import volm.atm.exceptions.EntityNotFoundException;
 import volm.atm.models.User;
@@ -18,7 +19,9 @@ import volm.atm.repos.UserRepo;
 import volm.atm.repos.UserTransactionsRepo;
 import volm.atm.service.UserTransactionService;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -41,18 +44,21 @@ public class TransactionsController {
 
 
     @GetMapping("/get-transactions")
-    public ResponseEntity<List<UserTransactions>> getTransactions(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<TransactionDto>> getTransactions(@AuthenticationPrincipal User user) {
 
         List<UserTransactions> allUserTransactions =
                 userTransactionsRepo.findAllByUserFromEqualsOrUserToEquals(user, user);
 
-        return ResponseEntity.ok(allUserTransactions);
+        List<TransactionDto> allTransactionsDto = allUserTransactions.stream()
+                .map(TransactionDto::fromModelToDto).collect(Collectors.toList());
+
+        return ResponseEntity.ok(allTransactionsDto);
     }
 
 
     @PostMapping("/top-up-my")
     public ResponseEntity<HttpStatus> topUpMy(@AuthenticationPrincipal User user,
-                                              @RequestBody TransactionsRequestDto requestDto) {
+                                              @RequestBody @Valid TransactionsRequestDto requestDto) {
 
         return userTransactionService.doTopUp(user, null, requestDto.getAmount());
     }
@@ -60,7 +66,7 @@ public class TransactionsController {
 
     @PostMapping("/top-up-someones")
     public ResponseEntity<HttpStatus> topUpSomeones(@AuthenticationPrincipal User user,
-                                                          @RequestBody TransactionsRequestDto requestDto) {
+                                                    @RequestBody @Valid TransactionsRequestDto requestDto) {
 
         return userTransactionService.doTopUp(user, requestDto.getCardNumber(), requestDto.getAmount());
     }
@@ -68,7 +74,7 @@ public class TransactionsController {
 
     @PostMapping("/money-transfer")
     public ResponseEntity<HttpStatus> moneyTransfer(@AuthenticationPrincipal User user,
-                                                    @RequestBody TransactionsRequestDto requestDto) {
+                                                    @RequestBody() @Valid TransactionsRequestDto requestDto) {
 
         return userTransactionService.doMoneyTransfer(user, requestDto.getCardNumber(), requestDto.getAmount());
     }
@@ -76,7 +82,7 @@ public class TransactionsController {
 
     @PostMapping("/withdraw-money")
     public ResponseEntity<HttpStatus> withdrawMoney(@AuthenticationPrincipal User user,
-                                                    @RequestBody TransactionsRequestDto requestDto) {
+                                                    @RequestBody @Valid TransactionsRequestDto requestDto) {
 
         return userTransactionService.doWithdraw(user, requestDto.getAmount());
     }

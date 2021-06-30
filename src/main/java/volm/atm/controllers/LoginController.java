@@ -13,6 +13,7 @@ import volm.atm.security.JwtProvider;
 import volm.atm.security.dto.SecurityUserRequestDto;
 import volm.atm.service.UserService;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 
@@ -26,17 +27,15 @@ public class LoginController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody SecurityUserRequestDto requestDto) {
+    public ResponseEntity<String> login(@RequestBody @Valid SecurityUserRequestDto requestDto) {
 
-        Optional<User> userFromDB = userService.findByLoginAndPassword(
-                requestDto.getCardNumber(),
-                requestDto.getPinCode());
+        User userFromDB = userService.getUser(requestDto.getCardNumber());
 
-        if (userFromDB.isPresent() && passwordEncoder.matches(requestDto.getPinCode(), userFromDB.get().getPinCode())) {
+        if (passwordEncoder.matches(requestDto.getPinCode(), userFromDB.getPinCode())) {
 
             String token = jwtProvider.generateToken(requestDto);
             return ResponseEntity.ok(token);
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

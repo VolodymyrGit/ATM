@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import volm.atm.models.User;
-import volm.atm.models.UserTransactions;
 
 import java.math.BigDecimal;
 
