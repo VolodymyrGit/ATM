@@ -1,10 +1,10 @@
 package volm.atm.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import volm.atm.exceptions.EntityNotFoundException;
 import volm.atm.models.OperationType;
 import volm.atm.models.User;
 import volm.atm.models.UserTransactions;
@@ -16,7 +16,7 @@ import volm.atm.service.UserTransactionService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserTransactionServiceImpl implements UserTransactionService {
@@ -29,8 +29,7 @@ public class UserTransactionServiceImpl implements UserTransactionService {
     @Override
     public ResponseEntity<HttpStatus> doTopUp(User user, String cardNumber, BigDecimal amount) {
 
-        User authUserFromDB = userRepo.findByCardNumberEquals(user.getCardNumber())
-                .orElseThrow(() -> new EntityNotFoundException(User.class));
+        User authUserFromDB = userService.getUser(user.getCardNumber());
 
         if (cardNumber == null || user.getCardNumber().equals(cardNumber)) {
 
@@ -38,9 +37,7 @@ public class UserTransactionServiceImpl implements UserTransactionService {
             saveTransaction(authUserFromDB, authUserFromDB, amount, OperationType.TOP_UP_MY);
 
         } else {
-            User userForTransfer = userRepo.findByCardNumberEquals(cardNumber)
-                    .orElseThrow(() -> new EntityNotFoundException(User.class));
-
+            User userForTransfer = userService.getUser(cardNumber);
             userForTransfer.setBalance(userForTransfer.getBalance().add(amount));
             saveTransaction(authUserFromDB, userForTransfer, amount, OperationType.TOP_UP_SOMEONES);
         }
@@ -51,8 +48,7 @@ public class UserTransactionServiceImpl implements UserTransactionService {
     @Override
     public ResponseEntity<HttpStatus> doWithdraw(User user, BigDecimal amount) {
 
-        User authUserFromDB = userRepo.findByCardNumberEquals(user.getCardNumber())
-                .orElseThrow(() -> new EntityNotFoundException(User.class));
+        User authUserFromDB = userService.getUser(user.getCardNumber());
 
         if (authUserFromDB.getBalance().subtract(amount).compareTo(BigDecimal.valueOf(0)) >= 0) {
 
@@ -61,6 +57,7 @@ public class UserTransactionServiceImpl implements UserTransactionService {
 
             return ResponseEntity.ok().build();
         }
+        //        Повертати воід або Exception
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
@@ -68,10 +65,8 @@ public class UserTransactionServiceImpl implements UserTransactionService {
     @Override
     public ResponseEntity<HttpStatus> doMoneyTransfer(User user, String cardNumber, BigDecimal amount) {
 
-        User authUserFromDB = userRepo.findByCardNumberEquals(user.getCardNumber())
-                .orElseThrow(() -> new EntityNotFoundException(User.class));
-        User userForTransfer = userRepo.findByCardNumberEquals(cardNumber)
-                .orElseThrow(() -> new EntityNotFoundException(User.class));
+        User authUserFromDB = userService.getUser(user.getCardNumber());
+        User userForTransfer = userService.getUser(cardNumber);
 
         if (userService.checkIfEnoughMoney(authUserFromDB, amount)) {
 
@@ -94,11 +89,11 @@ public class UserTransactionServiceImpl implements UserTransactionService {
                                  OperationType operationType) {
 
         UserTransactions transaction = UserTransactions.builder()
+                .operationType(operationType)
+                .amount(amount)
                 .userFrom(authUserFromDB)
                 .userTo(userForTransfer)
                 .transactionTime(LocalDateTime.now())
-                .amount(amount)
-                .operationType(operationType)
                 .build();
 
         userRepo.save(authUserFromDB);

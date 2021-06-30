@@ -32,6 +32,8 @@ public class UserTransactions {
     @Enumerated(EnumType.STRING)
     private OperationType operationType;
 
+    private BigDecimal amount;
+
     @ManyToOne
     private User userFrom;
 
@@ -40,17 +42,17 @@ public class UserTransactions {
 
     private LocalDateTime transactionTime;
 
-    private BigDecimal amount;
 
     public UserTransactions(OperationType operationType,
+                            BigDecimal amount,
                             User userFrom,
                             User userTo,
-                            LocalDateTime transactionTime,
-                            BigDecimal amount) {
+                            LocalDateTime transactionTime
+                            ) {
         this.operationType = operationType;
+        this.amount = amount;
         this.userFrom = userFrom;
         this.userTo = userTo;
         this.transactionTime = transactionTime;
-        this.amount = amount;
     }
 }
