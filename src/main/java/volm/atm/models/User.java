@@ -55,13 +55,6 @@ public class User implements UserDetails {
     private BigDecimal balance;
 
 
-    public User(String cardNumber, String pinCode, List<Role> roles, BigDecimal balance) {
-        this.cardNumber = cardNumber;
-        this.pinCode = pinCode;
-        this.roles = roles;
-        this.balance = balance;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;

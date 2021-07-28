@@ -13,6 +13,7 @@ import volm.atm.controllers.dto.BalanceResponseDto;
 import volm.atm.controllers.dto.TransactionDto;
 import volm.atm.controllers.dto.TransactionsRequestDto;
 import volm.atm.exceptions.EntityNotFoundException;
+import volm.atm.mappers.UserTransactionsMapper;
 import volm.atm.models.User;
 import volm.atm.models.UserTransactions;
 import volm.atm.repos.UserRepo;
@@ -21,7 +22,6 @@ import volm.atm.service.UserTransactionService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -31,6 +31,7 @@ public class TransactionsController {
     private final UserRepo userRepo;
     private final UserTransactionsRepo userTransactionsRepo;
     private final UserTransactionService userTransactionService;
+    private final UserTransactionsMapper userTransactionsMapper;
 
 
     @GetMapping("/get-balance")
@@ -49,8 +50,7 @@ public class TransactionsController {
         List<UserTransactions> allUserTransactions =
                 userTransactionsRepo.findAllByUserFromEqualsOrUserToEquals(user, user);
 
-        List<TransactionDto> allTransactionsDto = allUserTransactions.stream()
-                .map(TransactionDto::fromModelToDto).collect(Collectors.toList());
+        List<TransactionDto> allTransactionsDto = userTransactionsMapper.toListTransactionDto(allUserTransactions);
 
         return ResponseEntity.ok(allTransactionsDto);
     }

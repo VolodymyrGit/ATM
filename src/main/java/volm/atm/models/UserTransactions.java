@@ -41,18 +41,4 @@ public class UserTransactions {
     private User userTo;
 
     private LocalDateTime transactionTime;
-
-
-    public UserTransactions(OperationType operationType,
-                            BigDecimal amount,
-                            User userFrom,
-                            User userTo,
-                            LocalDateTime transactionTime
-                            ) {
-        this.operationType = operationType;
-        this.amount = amount;
-        this.userFrom = userFrom;
-        this.userTo = userTo;
-        this.transactionTime = transactionTime;
-    }
 }
