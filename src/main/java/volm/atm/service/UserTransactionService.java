@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Service
 public interface UserTransactionService {
 
-    ResponseEntity<HttpStatus> doTopUp(User user, String cardNumber, BigDecimal amount);
+    void doTopUp(User user, String cardNumber, BigDecimal amount);
 
     ResponseEntity<HttpStatus> doWithdraw(User user, BigDecimal amount);
 

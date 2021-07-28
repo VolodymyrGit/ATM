@@ -27,7 +27,7 @@ public class UserTransactionServiceImpl implements UserTransactionService {
 
 
     @Override
-    public ResponseEntity<HttpStatus> doTopUp(User user, String cardNumber, BigDecimal amount) {
+    public void doTopUp(User user, String cardNumber, BigDecimal amount) {
 
         User authUserFromDB = userService.getUser(user.getCardNumber());
 
@@ -41,7 +41,6 @@ public class UserTransactionServiceImpl implements UserTransactionService {
             userForTransfer.setBalance(userForTransfer.getBalance().add(amount));
             saveTransaction(authUserFromDB, userForTransfer, amount, OperationType.TOP_UP_SOMEONES);
         }
-        return ResponseEntity.ok().build();
     }
 
 

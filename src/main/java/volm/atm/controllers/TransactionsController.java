@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import volm.atm.controllers.dto.BalanceResponseDto;
-import volm.atm.controllers.dto.TransactionDto;
-import volm.atm.controllers.dto.TransactionsRequestDto;
-import volm.atm.exceptions.EntityNotFoundException;
+import volm.atm.dto.UserBalanceResponseDto;
+import volm.atm.dto.TransactionDto;
+import volm.atm.dto.TransactionsRequestDto;
+import volm.atm.mappers.UserMapper;
 import volm.atm.mappers.UserTransactionsMapper;
 import volm.atm.models.User;
 import volm.atm.models.UserTransactions;
-import volm.atm.repos.UserRepo;
 import volm.atm.repos.UserTransactionsRepo;
+import volm.atm.service.UserService;
 import volm.atm.service.UserTransactionService;
 
 import javax.validation.Valid;
@@ -28,19 +28,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionsController {
 
-    private final UserRepo userRepo;
+    private final UserService userService;
     private final UserTransactionsRepo userTransactionsRepo;
     private final UserTransactionService userTransactionService;
     private final UserTransactionsMapper userTransactionsMapper;
+    private final UserMapper userMapper;
 
 
     @GetMapping("/get-balance")
-    public ResponseEntity<BalanceResponseDto> getBalance(@AuthenticationPrincipal User user) {
+    public ResponseEntity<UserBalanceResponseDto> getBalance(@AuthenticationPrincipal User user) {
 
-        User userFromDB = userRepo.findByCardNumberEquals(user.getCardNumber())
-                .orElseThrow(() -> new EntityNotFoundException(User.class));
+        User userFromDB = userService.getUser(user.getCardNumber());
 
-        return ResponseEntity.ok(new BalanceResponseDto(userFromDB.getCardNumber(), userFromDB.getBalance()));
+        return ResponseEntity.ok(userMapper.toUserBalanceResponseDto(userFromDB));
     }
 
 
@@ -60,7 +60,9 @@ public class TransactionsController {
     public ResponseEntity<HttpStatus> topUpMy(@AuthenticationPrincipal User user,
                                               @RequestBody @Valid TransactionsRequestDto requestDto) {
 
-        return userTransactionService.doTopUp(user, null, requestDto.getAmount());
+        userTransactionService.doTopUp(user, null, requestDto.getAmount());
+
+        return ResponseEntity.ok().build();
     }
 
 
@@ -68,7 +70,9 @@ public class TransactionsController {
     public ResponseEntity<HttpStatus> topUpSomeones(@AuthenticationPrincipal User user,
                                                     @RequestBody @Valid TransactionsRequestDto requestDto) {
 
-        return userTransactionService.doTopUp(user, requestDto.getCardNumber(), requestDto.getAmount());
+        userTransactionService.doTopUp(user, requestDto.getCardNumber(), requestDto.getAmount());
+
+        return ResponseEntity.ok().build();
     }
 
 

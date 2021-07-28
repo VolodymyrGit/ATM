@@ -1,4 +1,4 @@
-package volm.atm.controllers.dto;
+package volm.atm.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @AllArgsConstructor
-public class BalanceResponseDto {
+public class UserBalanceResponseDto {
 
     private String cardNumber;
     private BigDecimal balance;

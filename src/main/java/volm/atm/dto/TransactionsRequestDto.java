@@ -1,4 +1,4 @@
-package volm.atm.controllers.dto;
+package volm.atm.dto;
 
 
 import lombok.AllArgsConstructor;
